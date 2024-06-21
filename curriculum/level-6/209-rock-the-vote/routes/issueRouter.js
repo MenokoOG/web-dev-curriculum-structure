@@ -64,4 +64,50 @@ issueRouter.put("/:issueId", async (req, res, next) => {
     return next(error);
   }
 });
+
+// Upvote
+issueRouter.put('/upvote/:id', async (req, res, next) => {
+    try {
+        const updatedIssue = await Issue.findOneAndUpdate(
+            {_id: req.params.id},
+            {
+                $addToSet: {likedUsers: req.auth._id},
+                $pull: {dislikedUsers: req.auth._id}
+            },
+            {new: true}
+        );
+
+        if (!updatedIssue) {
+            return res.status(404).send({message: 'Issue not found'});
+        }
+
+        res.status(201).send(updatedIssue);
+    } catch (err) {
+        res.status(500);
+        next(err);
+    }
+});
+
+// Downvote
+issueRouter.put('/downvote/:id', async (req, res, next) => {
+    try {
+        const updatedIssue = await Issue.findByIdAndUpdate(
+            req.params.id,
+            {
+                $addToSet: {dislikedUsers: req.auth._id},
+                $pull: {likedUsers: req.auth._id}
+            },
+            {new: true}
+        );
+
+        if (!updatedIssue) {
+            return res.status(404).send({message: 'Issue not found'});
+        }
+
+        res.status(201).send(updatedIssue);
+    } catch (err) {
+        res.status(500);
+        next(err);
+    }
+});
 module.exports = issueRouter;
