@@ -1,0 +1,70 @@
+# Verifying Passwords with bcrypt in Token-Based Authentication
+
+In this lesson, we will explore how bcrypt is used to verify user passwords. This step is crucial for authenticating users, ensuring that the password they enter matches the hashed password stored in the database.
+
+## Why Verify Passwords?
+
+When a user attempts to log in, their provided password needs to be checked against the hashed password stored in your database. However, since the stored password is hashed, a direct comparison is not possible. This is where bcrypt's `compare` method comes into play, allowing you to securely verify that the provided password matches the stored hash.
+
+## The Code: Checking Passwords with bcrypt
+
+Let's examine the following block of code which is part of a Mongoose schema method for verifying user passwords:
+
+```jsx
+userSchema.methods.checkPassword = async function (passwordAttempt) {
+    try {
+        return bcrypt.compare(passwordAttempt, this.password);
+    } catch (error) {
+        throw(error);
+    }
+}
+
+```
+
+Here’s a breakdown of how this code works:
+
+1. **Defining a Method**:
+The `userSchema.methods.checkPassword` function is defined as a method on the user schema. This makes it available on instances of user documents, allowing each user object to utilize this method.
+2. **Asynchronous Password Comparison**:
+The method is asynchronous, indicated by the `async` keyword. This means it will return a promise, making it suitable for use in asynchronous workflows typical in Node.js applications.
+3. **Password Attempt Argument**:
+The method takes one argument, `passwordAttempt`, which is the password provided by the user attempting to log in.
+4. **Using bcrypt to Compare Passwords**:
+Inside the method, `bcrypt.compare(passwordAttempt, this.password)` is called. Here’s what happens:
+    - `passwordAttempt` is the plaintext password entered by the user.
+    - `this.password` is the hashed password stored in the database.
+    - `bcrypt.compare` compares the plaintext password with the hashed password and returns a promise that resolves to `true` if they match, and `false` if they do not.
+5. **Error Handling**:
+The `try...catch` block ensures that any errors encountered during the comparison process are caught. If an error occurs, it is thrown to be handled by the calling function.
+
+## How bcrypt's `compare` Method Works
+
+The `compare` method in bcrypt is designed to safely check if a given plaintext password matches a stored hash. It does so by internally hashing the plaintext password with the same salt used to create the original hash, and then comparing the two hashes. This process is secure and efficient, making it ideal for user authentication.
+
+## Practical Usage
+
+When a user attempts to log in, the provided password is passed to the `checkPassword` method. Here’s a simple example of how this might look in a login function:
+
+```jsx
+const user = await User.findOne({ username: req.body.username });
+if (!user) {
+    return res.status(400).send('User not found');
+}
+
+const isMatch = await user.checkPassword(req.body.password);
+if (!isMatch) {
+    return res.status(400).send('Invalid password');
+}
+
+// Proceed with generating a token and logging the user in
+
+```
+
+## Security Considerations
+
+Using bcrypt to verify passwords provides several security benefits:
+
+- **Protection Against Brute-Force Attacks**: The hashing and comparison processes are computationally intensive, slowing down potential brute-force attacks.
+- **Salting**: The use of salts ensures that even identical passwords have different hashes, preventing attackers from using precomputed hash tables (rainbow tables).
+
+In conclusion, bcrypt's ability to verify passwords securely is a fundamental aspect of user authentication in modern web applications. By leveraging bcrypt's `compare` method, you can ensure that only users with the correct credentials gain access, thereby protecting user data and enhancing the security of your application.
