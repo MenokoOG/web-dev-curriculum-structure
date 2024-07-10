@@ -27,7 +27,7 @@ issueRouter.get('/all', async (req, res, next) => {
 });
 
 // GET: Retrieve issues for the authenticated user /api/main/issues
-issueRouter.get('/', async (req, res, next) => {
+issueRouter.get('/user', async (req, res, next) => {
     try {
         const foundIssues = await Issue.find({ userId: req.auth._id });
         res.status(200).send(foundIssues);
