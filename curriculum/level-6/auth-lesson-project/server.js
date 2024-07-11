@@ -27,6 +27,8 @@ app.use(
   expressjwt({ secret: process.env.SECRET, algorithms: ["HS256"] })
 );
 app.use("/api/main/issues", require("./routes/issueRouter"));
+app.use("/api/main/comments", require("./routes/commentRouter"));
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -38,7 +40,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
