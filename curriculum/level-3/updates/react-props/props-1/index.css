@@ -1,0 +1,17 @@
+.skateboard {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    display: inline-block;
+    width: 200px;
+    text-align: left;
+  }
+  
+  .skateboard h2 {
+    font-size: 1.5em;
+  }
+  
+  .skateboard p {
+    margin: 5px 0;
+  }
+  
