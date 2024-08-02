@@ -2,6 +2,8 @@
 
 export default function RandomMovie() {
     return (
-        <h1>Random Movie !!!</h1>
+        <div>
+            <button>Random Movie</button>
+        </div>
     )
 }
